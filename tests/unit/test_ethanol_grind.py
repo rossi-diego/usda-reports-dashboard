@@ -148,3 +148,63 @@ def test_validate_runs_the_silver_contract(cfg: SourceConfig, config_dir: Path):
     df = build_frame(releases, cfg, "15:00")
     contract = Contract.load(config_dir / "contracts" / "ethanol_grind.yaml")
     validate(df, contract)  # must not raise
+
+
+# ------------------------------------------------------------------ insights (H1/H2)
+
+
+def _pace_row(my_start: int, pct: float | None) -> dict:
+    return {
+        "market_year": f"{my_start}/{(my_start + 1) % 100:02d}",
+        "my_start": my_start,
+        "month_of_my": 1,
+        "month": pd.Timestamp(my_start, 9, 1),
+        "release_key": f"{my_start}-11-02",
+        "release_ts_utc": pd.Timestamp(f"{my_start}-11-02T20:00:00Z"),
+        "first_printed_as": "current",
+        "month_grind_kbu": 400000.0,
+        "month_grind_bu": 400000000.0,
+        "month_ddgs_st": 1600000.0,
+        "ddgs_yield_st_per_kbu": 4.0,
+        "cum_kbu": 400000.0,
+        "cum_bu": 400000000.0,
+        "n_months_known": 1,
+        "inputs_max_release_ts_utc": pd.Timestamp(f"{my_start}-11-02T20:00:00Z"),
+        "wasde_release_key": f"{my_start}-10",
+        "wasde_release_ts_utc": pd.Timestamp(f"{my_start}-10-09T16:00:00Z"),
+        "wasde_proj_est_flag": "proj",
+        "wasde_ethanol_unit_id": "m_bu",
+        "wasde_ethanol_native": 5600.0,
+        "wasde_ethanol_bu": 5600000000.0,
+        "pct_of_target": pct,
+        "months_remaining": 11,
+        "required_monthly_bu": 470000000.0 if pct is not None else None,
+        "last_my_remaining_mean_bu": 460000000.0,
+        "last_my_remaining_n": 11,
+        "n_5yr": 0,
+        "pct_5yr_mean": None,
+        "pct_5yr_min": None,
+        "pct_5yr_max": None,
+        "n_yield_5yr": 0,
+        "yield_5yr_mean": None,
+        "yield_5yr_min": None,
+        "yield_5yr_max": None,
+        "is_latest": my_start == 2026,
+    }
+
+
+def test_h1_and_h2_build_valid_insights():
+    """Regression test: H1/H2 must be accepted rule ids and ethanol_grind an accepted
+    report_id on the shared Insight model (caught a real bug: these rule/report_id Literals
+    were extended everywhere except on the Insight model itself)."""
+    import usda_reports.insights.rules.ethanol_grind as eg_rules
+
+    pace = pd.DataFrame([_pace_row(y, 0.07 + 0.001 * i) for i, y in enumerate(range(2021, 2027))])
+    h1 = eg_rules.h1_grind_pace(pace)
+    h2 = eg_rules.h2_required_monthly_grind(pace)
+    assert [i.id for i in h1] == ["H1:corn"]
+    assert [i.id for i in h2] == ["H2:corn"]
+    assert h1[0].rule == "H1"
+    assert h1[0].report_id == "ethanol_grind"
+    assert h1[0].suppressed_reason is None
+    assert h2[0].suppressed_reason is None

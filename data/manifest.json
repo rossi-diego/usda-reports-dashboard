@@ -7568,9 +7568,9 @@
       }
     },
     "ethanol_grind": {
-      "latest_release_key": null,
+      "latest_release_key": "2026-11-02",
       "latest_number": null,
-      "total_rows": null,
+      "total_rows": 6426,
       "shards_written": [],
       "releases": {
         "2016-03-01": {

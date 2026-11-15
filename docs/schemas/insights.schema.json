@@ -186,7 +186,9 @@
             "C3",
             "G1",
             "G2",
-            "G3"
+            "G3",
+            "H1",
+            "H2"
           ],
           "title": "Rule",
           "type": "string"
@@ -196,6 +198,7 @@
             "wasde",
             "export_sales",
             "oilseed_crush",
+            "ethanol_grind",
             "crop_progress",
             "grain_stocks",
             "cross"

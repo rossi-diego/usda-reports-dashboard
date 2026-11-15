@@ -105,9 +105,17 @@ class Insight(BaseModel):
         "G1",
         "G2",
         "G3",
+        "H1",
+        "H2",
     ]
     report_id: Literal[
-        "wasde", "export_sales", "oilseed_crush", "crop_progress", "grain_stocks", "cross"
+        "wasde",
+        "export_sales",
+        "oilseed_crush",
+        "ethanol_grind",
+        "crop_progress",
+        "grain_stocks",
+        "cross",
     ]
     commodity_id: str | None
     kind: InsightKind
