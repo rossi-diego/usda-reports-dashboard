@@ -1,8 +1,8 @@
 """Site JSON for the commodity lenses: ``web/public/data/lens/<commodity>.json``.
 
 One commodity, every report (plan §8 /commodities, cut line C): the latest headline numbers
-of every report that covers the commodity (WASDE, Export Sales, NASS crush, Crop Progress,
-Grain Stocks) from ``fct_commodity_lens``, each with its source report, release key, release
+of every report that covers the commodity (WASDE, Export Sales, NASS crush, Ethanol Grind,
+Crop Progress, Grain Stocks) from ``fct_commodity_lens``, each with its source report, release key, release
 instant, period and next release, plus the ids of that commodity's insights that pass their
 gates (the page renders them from insights.json). Soybeans and corn only (plan §8).
 """
@@ -24,7 +24,14 @@ log = get_logger(__name__)
 
 SCHEMA_VERSION = 1
 LENSES = {"soybeans": "Soybeans", "corn": "Corn"}
-REPORT_ORDER = ("wasde", "export_sales", "oilseed_crush", "crop_progress", "grain_stocks")
+REPORT_ORDER = (
+    "wasde",
+    "export_sales",
+    "oilseed_crush",
+    "ethanol_grind",
+    "crop_progress",
+    "grain_stocks",
+)
 SHARE_DP = 6
 
 

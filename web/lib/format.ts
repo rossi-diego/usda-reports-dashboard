@@ -188,6 +188,18 @@ export const lbPerBu = (v: number | null | undefined, d = 2) =>
 /** NASS short tons (2,000 lb) as metric tonnes, for the secondary metric line. */
 export const shortTonsToMt = (st: number | null | undefined) => (st === null || st === undefined ? null : st * 0.907185);
 
+/** NASS short tons, scaled like USDA writes bushels: "1.70 mil. st", "540 st" (PT "mi st"). */
+export function shortTons(st: number | null | undefined, lang: Lang = "en"): string {
+  if (st === null || st === undefined || Number.isNaN(st)) return "—";
+  const a = Math.abs(st);
+  if (a >= 1e6) return `${num(st / 1e6, 2)} ${lang === "pt" ? "mi st" : "mil. st"}`;
+  return `${num(st, 0)} st`;
+}
+
+/** Short tons of a co-product per 1,000 bushels ground: "9.00 st/kbu". */
+export const stPerKbu = (v: number | null | undefined, d = 2) =>
+  v === null || v === undefined || Number.isNaN(v) ? "—" : `${num(v, d)} st/kbu`;
+
 /** Signed native-unit change: "+282", "−5". */
 export function signedQty(v: number | null | undefined, unit?: string | null, lang: Lang = "en"): string {
   if (v === null || v === undefined) return "—";

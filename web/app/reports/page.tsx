@@ -5,14 +5,14 @@ import { DateText, MonthYear, T } from "@/components/chrome/I18n";
 import TopBar, { CommodityPills } from "@/components/chrome/TopBar";
 import { EsrLatestText, FreshnessChip, KeyDates, StaleBanner } from "@/components/Freshness";
 import { commodityPills, releaseInfo } from "@/lib/dashboard";
-import { getCropProgressIndex, getCrushIndex, getEsrIndex, getGrainStocksIndex, getInsights, getMeta, getReleaseCatalog, getReportsMeta } from "@/lib/data";
+import { getCropProgressIndex, getCrushIndex, getEsrIndex, getEthanolGrindIndex, getGrainStocksIndex, getInsights, getMeta, getReleaseCatalog, getReportsMeta } from "@/lib/data";
 import { num } from "@/lib/format";
 import type { Key } from "@/lib/i18n";
 
 export const metadata: Metadata = { title: "Reports · USDA Reports Dashboard" };
 
 // Cadence + grace when insights.json (gates.stale_after_days) is not in the build.
-const DEFAULT_STALE: Record<string, number> = { wasde: 76, export_sales: 17, oilseed_crush: 76, crop_progress: 17, grain_stocks: 192 };
+const DEFAULT_STALE: Record<string, number> = { wasde: 76, export_sales: 17, oilseed_crush: 76, ethanol_grind: 76, crop_progress: 17, grain_stocks: 192 };
 
 function Row({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -49,6 +49,9 @@ export default function ReportsPage() {
   const crush = getCrushIndex();
   const crushMeta = reports.oilseed_crush;
   const crushTs = crushMeta?.release_ts_utc ?? crush?.latest.release_ts_utc ?? null;
+  const ethanol = getEthanolGrindIndex();
+  const ethanolMeta = reports.ethanol_grind;
+  const ethanolTs = ethanolMeta?.release_ts_utc ?? ethanol?.latest.release_ts_utc ?? null;
   // Rows of the published ESR datasets (one entry per dataset; the Parquet file's count).
   const esrDatasetRows = (getReleaseCatalog()?.files ?? []).filter(
     (f) => f.report_id === "export_sales" && f.format === "parquet" && !f.legacy_alias_of,
@@ -65,6 +68,9 @@ export default function ReportsPage() {
       )}
       {crush && (
         <StaleBanner reportId="oilseed_crush" name="report.crush" cadence="cadence.monthly" releaseTs={crushTs} maxDays={stale.oilseed_crush} />
+      )}
+      {ethanol && (
+        <StaleBanner reportId="ethanol_grind" name="report.ethanol_grind" cadence="cadence.monthly" releaseTs={ethanolTs} maxDays={stale.ethanol_grind} />
       )}
       {cp && (
         <StaleBanner reportId="crop_progress" name="report.crop_progress" cadence="cadence.weekly" releaseTs={cpTs} maxDays={stale.crop_progress} offSeason={cpOff} />
@@ -215,6 +221,51 @@ export default function ReportsPage() {
                 <T k="reports.openCrush" />
               </Link>
               <Link href="/data/#report-oilseed_crush" className="inline-flex min-h-11 items-center text-link">
+                <T k="reports.data" />
+              </Link>
+            </div>
+          </article>
+        )}
+
+        {ethanol && (
+          <article id="ethanol_grind" aria-labelledby="h-ethanol" className="card flex flex-col gap-3 p-5" style={{ borderColor: "var(--r-ethanol)" }}>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <div className="eyebrow" style={{ color: "var(--r-ethanol)" }}>
+                  <T k="cadence.d.monthlyCrush" />
+                </div>
+                <h2 id="h-ethanol" lang="en" className="m-0 text-[17px] font-bold">
+                  Grain Crushings and Co-Products Production (Ethanol Grind) · USDA NASS
+                </h2>
+              </div>
+              <LiveChip color="var(--pill-ethanol)" />
+            </div>
+            <dl className="m-0 grid">
+              <Row label={<T k="reports.latest" />}>
+                <MonthYear m={ethanol.latest.month.slice(0, 7)} />
+                {" · "}
+                <DateText iso={ethanol.latest.release_key} />
+              </Row>
+              <Row label={<T k="reports.next" />}>
+                <DateText iso={ethanolMeta?.next_release ?? ethanol.next_release} />
+              </Row>
+              <Row label={<T k="reports.freshness" />}>
+                <FreshnessChip releaseTs={ethanolTs} maxDays={stale.ethanol_grind} />
+              </Row>
+              {ethanolMeta && (
+                <Row label={<T k="reports.history" />}>
+                  <T k="reports.releasesRows" v={{ releases: num(ethanolMeta.releases), rows: num(ethanolMeta.rows) }} />
+                  <div className="text-xs font-normal text-muted">
+                    <T k="card.window" v={{ from: ethanol.history_start }} />
+                  </div>
+                </Row>
+              )}
+            </dl>
+            <div className="mt-auto flex flex-wrap gap-x-5">
+              <Link href="/reports/ethanol-grind/" className="inline-flex min-h-11 items-center font-semibold text-link">
+                <T k="reports.openEthanol" />
+              </Link>
+              <Link href="/data/#report-ethanol_grind" className="inline-flex min-h-11 items-center text-link">
                 <T k="reports.data" />
               </Link>
             </div>

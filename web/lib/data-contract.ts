@@ -451,6 +451,94 @@ export type CrushCommodity = {
   }[];
 };
 
+// ------------------------------------------------- reports/ethanol_grind/<commodity>.json
+
+export type EthanolGrindLatest = {
+  release_key: string; // release date YYYY-MM-DD (release.nass.usda.gov, no ESMIS identifier)
+  release_ts_utc: string | null;
+  month: string; // first day of the data month (about two months before the release)
+  month_of_my: number; // 1 = September
+  first_printed_as: "current" | "previous" | null; // previous: a shutdown skipped the month's own release
+  vintage_quality: "as_published";
+};
+export type EthanolGrindIndex = {
+  schema_version: 1;
+  report_id: "ethanol_grind";
+  latest: EthanolGrindLatest;
+  next_release: string | null;
+  history_start: string; // "2016-03": first release.nass.usda.gov Ethanol Grind file
+  commodities: { id: string; label: string; market_year: string; file: string }[];
+};
+
+export type EthanolGrindCommodity = {
+  schema_version: 1;
+  report_id: "ethanol_grind";
+  commodity_id: "corn";
+  label: string;
+  history_start: string;
+  market_year: string;
+  my_start: number;
+  latest: EthanolGrindLatest;
+  next_release: string | null;
+  target: {
+    wasde_release_key: string | null;
+    wasde_release_ts_utc: string | null;
+    ethanol_native: number | null; // million bushels
+    ethanol_bu: number | null;
+    unit_id: string | null; // m_bu
+    flag: string | null;
+  };
+  kpis: {
+    month_grind_kbu: number | null;
+    month_grind_bu: number | null;
+    month_ddgs_st: number | null;
+    ddgs_yield_st_per_kbu: number | null;
+    cum_bu: number | null;
+    cum_kbu: number | null;
+    pct_of_target: number | null;
+    n_5yr: number;
+    pct_5yr_mean: number | null;
+    pct_5yr_min: number | null;
+    pct_5yr_max: number | null;
+    months_remaining: number;
+    required_monthly_bu: number | null;
+    last_my_remaining_mean_bu: number | null;
+    last_my_remaining_n: number;
+    n_yield_5yr: number;
+    yield_5yr_mean: number | null;
+    yield_5yr_min: number | null;
+    yield_5yr_max: number | null;
+  };
+  pace: {
+    basis: "pct_of_usda_projection_at_the_time";
+    series: {
+      market_year: string;
+      my_start: number;
+      current: boolean;
+      points: PacePoint[]; // [month_of_my, pct, wasde_release_key]
+      yield: [number, number | null][]; // [month_of_my, DDGS st per 1,000 bu, as first printed]
+    }[];
+    band: MonthBand[];
+  };
+  yield: { unit_id: "ddgs_st_per_kbu"; band: MonthBand[] };
+  remaining: { market_year: string; last_my_months: { month: string; month_of_my: number; grind_bu: number | null }[] };
+  monthly: {
+    month: string;
+    market_year: string;
+    month_of_my: number;
+    corn_fuel_alcohol_kbu: number | null;
+    corn_fuel_alcohol_bu: number | null;
+    corn_fuel_dry_mill_kbu: number | null;
+    corn_fuel_wet_mill_kbu: number | null;
+    ddg_st: number | null;
+    ddgs_st: number | null;
+    corn_oil_st: number | null;
+    ddgs_yield_st_per_kbu: number | null;
+    is_revised: boolean;
+    latest_release_key: string;
+  }[];
+};
+
 // ------------------------------------------------- reports/crop_progress/<crop>.json (cut C)
 
 export type CropId = "corn" | "soybeans" | "winter_wheat" | "spring_wheat";

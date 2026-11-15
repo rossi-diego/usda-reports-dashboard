@@ -132,7 +132,7 @@ def detect(
         str,
         typer.Option(
             help="Report to detect (wasde | export_sales | oilseed_crush | crop_progress | "
-            "grain_stocks)"
+            "grain_stocks | ethanol_grind)"
         ),
     ] = WASDE,
     force: Annotated[bool, typer.Option(help="Date-keyed reports: pull even if not due")] = False,

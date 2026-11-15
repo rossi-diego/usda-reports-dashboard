@@ -178,6 +178,36 @@ datasets:
       Grain Stocks vs. USDA, point in time: NASS total stocks on the dates that are a WASDE
       ending stock (corn/soybeans September 1, wheat June 1), as first printed, against the
       old-crop ending stocks in the WASDE public at the release (million bushels and %).
+  - report_id: ethanol_grind
+    dataset: monthly_grind
+    schema_version: 1
+    model: fct_ethanol_grind_monthly
+    columns: "*"
+    order_by: month
+    coverage: month
+    release_column: latest_release_key
+    site_preview: true
+    description: >-
+      U.S. corn-for-ethanol grind per month from NASS Grain Crushings and Co-Products Production
+      (direct release.nass.usda.gov files since the 2016-03-01 release; marketing year
+      September–August): corn consumed for fuel alcohol (dry and wet mill, thousand bushels and
+      bushels), DDG, DDGS, corn distillers oil and other co-products (short tons), DDGS yield
+      per bushel ground, latest revised value with the release that first printed each month.
+  - report_id: cross
+    dataset: ethanol_pace
+    schema_version: 1
+    model: fct_ethanol_pace
+    columns: "*"
+    order_by: month
+    coverage: month
+    release_column: release_key
+    site_preview: true
+    licence: "US Government work, public domain; cite USDA NASS (Grain Crushings and Co-Products Production) and USDA OCE/WAOB (WASDE)"
+    description: >-
+      Corn-for-ethanol grind pace vs. USDA, point in time: marketing-year-to-date corn used for
+      fuel alcohol as a share of the WASDE "Ethanol & by-products" projection public when NASS
+      first printed each month, what is still needed per month, DDGS yield, and the same month
+      of the 5 prior marketing years (from MY 2016/17).
   - report_id: cross
     dataset: stocks_disappearance
     schema_version: 1

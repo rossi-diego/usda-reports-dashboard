@@ -16,6 +16,7 @@ from usda_reports.insights import gates as gates_mod
 from usda_reports.insights.hero import build_hero, home_cards
 from usda_reports.insights.rules import crop_progress as cp_rules
 from usda_reports.insights.rules import crush as crush_rules
+from usda_reports.insights.rules import ethanol_grind as eg_rules
 from usda_reports.insights.rules import export_sales as es_rules
 from usda_reports.insights.rules import grain_stocks as gs_rules
 from usda_reports.insights.rules import wasde as wasde_rules
@@ -97,6 +98,14 @@ def build(
     gs, n_gs = gs_rules.all_rules(con)
     raw += gs
     screened.update(n_gs)
+
+    if _table_exists(con, "fct_ethanol_pace"):
+        grind = eg_rules.pace_frame(con)
+        if len(grind):
+            h1 = eg_rules.h1_grind_pace(grind)
+            h2 = eg_rules.h2_required_monthly_grind(grind, gates.f2_min_months_remaining)
+            raw += h1 + h2
+            screened.update({"H1": len(h1), "H2": len(h2)})
 
     idx = release_index(con)
     out = []

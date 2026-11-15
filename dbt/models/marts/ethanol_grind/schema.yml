@@ -1,0 +1,132 @@
+version: 2
+models:
+- name: fct_ethanol_grind_monthly
+  description: U.S. corn-for-ethanol grind and co-products production per month (NASS Grain
+    Crushings and Co-Products Production, direct release.nass.usda.gov files since the
+    2016-03-01 release), latest revised value of each metric, with the release that first
+    printed the month. Marketing year September-August. Published as ethanol_grind__monthly__v1.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: market_year
+    data_type: varchar
+    description: Corn marketing year (September-August) in WASDE notation, e.g. 2026/27.
+    data_tests:
+    - not_null
+  - name: my_start
+    data_type: integer
+    description: First calendar year of the marketing year.
+  - name: month_of_my
+    data_type: integer
+    description: Month index within the marketing year (1 = September ... 12 = August).
+    data_tests:
+    - accepted_values:
+        arguments:
+          values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+          quote: false
+  - name: month
+    data_type: date
+    description: First day of the data month (ISO date).
+    data_tests:
+    - not_null
+    - unique
+  - name: corn_fuel_alcohol_kbu
+    data_type: double
+    description: Corn consumed for fuel alcohol, dry + wet mill (NASS "1,000 bushels").
+    data_tests:
+    - not_null
+  - name: corn_fuel_alcohol_bu
+    data_type: double
+    description: Same, in bushels (x1,000, dim_unit k_bu for corn).
+  - name: corn_fuel_dry_mill_kbu
+    data_type: double
+    description: Corn consumed for fuel alcohol, dry mill only (thousand bushels).
+  - name: corn_fuel_wet_mill_kbu
+    data_type: double
+    description: Corn consumed for fuel alcohol, wet mill only (thousand bushels).
+  - name: corn_beverage_alcohol_kbu
+    data_type: double
+    description: Corn consumed for beverage alcohol (thousand bushels).
+  - name: corn_industrial_alcohol_kbu
+    data_type: double
+    description: Corn consumed for industrial alcohol (thousand bushels).
+  - name: corn_wet_mill_other_kbu
+    data_type: double
+    description: Corn consumed for wet-mill products other than fuel (thousand bushels).
+  - name: ddg_st
+    data_type: double
+    description: Distillers dried grains produced (NASS "tons" = short tons of 2,000 lb).
+  - name: ddgs_st
+    data_type: double
+    description: Distillers dried grains with solubles produced (short tons).
+  - name: cds_syrup_st
+    data_type: double
+    description: Condensed distillers solubles (syrup) produced (short tons).
+  - name: corn_oil_st
+    data_type: double
+    description: Dry-mill corn distillers oil (CDO) produced (short tons).
+  - name: dwg_st
+    data_type: double
+    description: Distillers wet grains, 65%+ moisture, produced (short tons).
+  - name: modified_dwg_st
+    data_type: double
+    description: Modified distillers wet grains, 40-64% moisture, produced (short tons).
+  - name: corn_germ_meal_st
+    data_type: double
+    description: Wet-mill corn germ meal produced (short tons).
+  - name: corn_gluten_feed_st
+    data_type: double
+    description: Wet-mill corn gluten feed produced (short tons).
+  - name: corn_gluten_meal_st
+    data_type: double
+    description: Wet-mill corn gluten meal produced (short tons).
+  - name: wet_corn_gluten_feed_st
+    data_type: double
+    description: Wet corn gluten feed, 40-60% moisture, produced (short tons).
+  - name: co2_captured_st
+    data_type: double
+    description: Carbon dioxide captured, dry + wet mill (short tons).
+  - name: ddgs_yield_st_per_kbu
+    data_type: double
+    description: DDGS co-product yield, ddgs_st / corn_fuel_alcohol_kbu (short tons per 1,000
+      bushels ground); the Ethanol Grind analogue of oilseed crush's oil yield.
+  - name: corn_fuel_alcohol_kbu_first
+    data_type: double
+    description: Corn-for-fuel-alcohol as first printed (before NASS revised it in later releases).
+  - name: is_revised
+    data_type: boolean
+    description: True when the latest corn_fuel_alcohol_kbu differs from the first print.
+  - name: first_release_key
+    data_type: varchar
+    description: Release (release date, YYYY-MM-DD) that first printed the month.
+    data_tests:
+    - not_null
+  - name: first_release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that release (15:00 ET, stored in UTC).
+    data_tests:
+    - not_null
+  - name: first_printed_as
+    data_type: varchar
+    description: Column the month was first printed in (current; previous after a shutdown;
+      year_ago or earlier for months before the first file).
+    data_tests:
+    - accepted_values:
+        arguments:
+          values: [current, previous, year_ago, earlier]
+  - name: latest_release_key
+    data_type: varchar
+    description: Release whose (latest revised) values are shown.
+  - name: latest_release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that release (UTC).
+  - name: n_vintages
+    data_type: integer
+    description: How many releases printed the month (current, previous, year-ago columns).
+  - name: source_url
+    data_type: varchar
+    description: release.nass.usda.gov zip of the release whose values are shown.
+  - name: is_latest_month
+    data_type: boolean
+    description: True on the newest month published.

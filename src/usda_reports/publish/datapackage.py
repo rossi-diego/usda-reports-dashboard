@@ -147,7 +147,7 @@ def build_datapackage(
         "profile": PROFILE,
         "name": "usda-reports",
         "title": "USDA Reports Dashboard: harmonized WASDE, Export Sales, NASS crush, Crop "
-        "Progress and Grain Stocks data",
+        "Progress, Grain Stocks and Ethanol Grind data",
         "version": tag or "unreleased",
         "created": datetime.now(UTC).isoformat(timespec="seconds"),
         "homepage": f"https://github.com/{repo}",
@@ -175,6 +175,10 @@ def build_datapackage(
             {
                 "title": "USDA NASS: Grain Stocks, via ESMIS",
                 "path": "https://esmis.nal.usda.gov/api/v1/release/findByIdentifier/GraiStoc",
+            },
+            {
+                "title": "USDA NASS: Grain Crushings and Co-Products Production",
+                "path": "https://release.nass.usda.gov/reports/",
             },
         ],
         "resources": resources,

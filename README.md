@@ -8,13 +8,14 @@
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Five USDA reports — every WASDE since July 2010, every weekly Export Sales release since
-marketing year 2010/11, the monthly NASS soybean crush since October 2015, the weekly NASS Crop
-Progress since 2010 and the quarterly NASS Grain Stocks since 2010 — harmonized into one
-point-in-time data product, updated automatically on release day, and turned into the view a
-trading desk actually needs: what changed, whether it is tight or loose versus history, whether
-sales and crush are on pace for what USDA itself projected at the time, how the crop looks and
-whether stocks surprised USDA. In English and Brazilian Portuguese.**
+**Six USDA reports — every WASDE since July 2010, every weekly Export Sales release since
+marketing year 2010/11, the monthly NASS soybean crush since October 2015, the monthly NASS
+corn-for-ethanol grind since March 2016, the weekly NASS Crop Progress since 2010 and the
+quarterly NASS Grain Stocks since 2010 — harmonized into one point-in-time data product, updated
+automatically on release day, and turned into the view a trading desk actually needs: what
+changed, whether it is tight or loose versus history, whether sales, crush and the ethanol grind
+are on pace for what USDA itself projected at the time, how the crop looks and whether stocks
+surprised USDA. In English and Brazilian Portuguese.**
 
 🔗 **Live site:** https://usda-reports.vercel.app · 📦 **Data:** [latest release](https://github.com/rossi-diego/usda-reports-dashboard/releases/latest)
 
@@ -80,6 +81,7 @@ error-prone. This project does it end to end:
 | WASDE | USDA OCE/WAOB | monthly, 12:00 | OCE CSV (2021+) + ESMIS XML | 2010-07 → | [/reports/wasde](https://usda-reports.vercel.app/reports/wasde/) · [commodity pages](https://usda-reports.vercel.app/commodity/soybeans/) | live |
 | Export Sales (ESR) | USDA FAS | weekly, Thu 08:30 | FAS ESR API (`api.fas.usda.gov`, api.data.gov key) | MY 2010/11 → | [/reports/export-sales](https://usda-reports.vercel.app/reports/export-sales/) | live |
 | Fats & Oils: soybean crush | USDA NASS | monthly, ~1st business day 15:00 | ESMIS `FatsOils` → release zip → `cafo_all_tables.csv` (no key) | 2015-10 → (ESMIS limit) | [/reports/oilseed-crush](https://usda-reports.vercel.app/reports/oilseed-crush/) | live |
+| Grain Crushings and Co-Products Production (Ethanol Grind): corn-for-ethanol grind | USDA NASS | monthly, ~1st business day 15:00 | `release.nass.usda.gov` direct → `cagc_all_tables.csv` (no ESMIS identifier, no key) | 2016-03 → (server retention) | [/reports/ethanol-grind](https://usda-reports.vercel.app/reports/ethanol-grind/) | live |
 | Crop Progress (corn, soybeans, winter/spring wheat; national) | USDA NASS | weekly, Mon 16:00 (Apr–Nov; holiday → Tue) | ESMIS `CropProg` → release zip → `prog_all_tables.csv` (no key) | 2010-06 → | [/reports/crop-progress](https://usda-reports.vercel.app/reports/crop-progress/) | live (cut C) |
 | Grain Stocks (corn, soybeans, wheat; by position) | USDA NASS | quarterly, 12:00 | ESMIS `GraiStoc` → release zip → `grst_all_tables.csv` (no key) | 2010-06 → | [/reports/grain-stocks](https://usda-reports.vercel.app/reports/grain-stocks/) | live (cut C) |
 
@@ -271,12 +273,14 @@ not failures; a report missing 3 days after its scheduled date is.
 | `dim_release` *(core)* | report_id × release | Every release of every report: UTC release instant, edition, bronze sha256 |
 | `dim_calendar` *(core)* | report_id × scheduled date | Upcoming and past release dates, ingested or not |
 | `dim_unit`, `dim_commodity` *(seeds)* | unit / commodity | MT conversions (bu, short tons, lb; round-trip tested) and marketing-year start months |
-| `int_wasde_asof` *(core)* | commodity × MY × WASDE vintage | U.S. exports, production, ending stocks, crush in native units and MT |
+| `int_wasde_asof` *(core)* | commodity × MY × WASDE vintage | U.S. exports, production, ending stocks, crush, corn ethanol use in native units and MT |
 | `fct_export_sales_weekly` | commodity × MY × week × destination | Latest value of weekly exports, accumulated, outstanding, net sales, commitments, next-MY sales (MT) |
 | `fct_export_sales_totals` | commodity × MY × week | All destinations, with China and unknown-destination commitments and the 4-week net-sales mean |
 | `fct_export_pace` *(cross)* | commodity × MY × week | Commitments ÷ as-of WASDE exports, required weekly sales, 5-prior-MY mean/min/max at the same week |
 | `fct_soy_crush_monthly` | month | NASS soybeans crushed (short tons, bushels), crude oil and meal produced, oil and meal yield per bushel; latest revision with the release that first printed the month |
 | `fct_crush_pace` *(cross)* | MY × month | At the instant NASS first printed the month: crush to date (vintages public then) ÷ as-of WASDE crush, required monthly crush, oil yield vs the WASDE-implied yield, 5-prior-MY band |
+| `fct_ethanol_grind_monthly` | month | NASS corn consumed for fuel alcohol (dry/wet mill, bushels) and co-products (DDG, DDGS, corn oil, corn gluten feed…, short tons); latest revision with the release that first printed the month |
+| `fct_ethanol_pace` *(cross)* | MY × month | At the instant NASS first printed the month: corn-for-ethanol grind to date ÷ as-of WASDE "Ethanol & by-products" use, required monthly grind, DDGS yield, 5-prior-MY band |
 
 Models live in `dbt/models/{staging/<report>, marts/core, marts/<report>, marts/cross}` so
 every new USDA report adds its own folder. Published ESR and cross marts have enforced dbt
@@ -299,6 +303,8 @@ listed with rows, bytes and sha256 in `datasets.json`:
 | `cross__export_pace__v1` | `fct_export_pace` |
 | `oilseed_crush__monthly__v1` | `fct_soy_crush_monthly` |
 | `cross__crush_pace__v1` | `fct_crush_pace` |
+| `ethanol_grind__monthly_grind__v1` | `fct_ethanol_grind_monthly` |
+| `cross__ethanol_pace__v1` | `fct_ethanol_pace` |
 
 `config/datasets.yaml` maps model → file → schema version. Every release also carries
 **`datapackage.json`** (Frictionless; per resource: sha256, bytes, rows, temporal coverage,
@@ -382,23 +388,26 @@ Screenshots are regenerated with `SHOTS_DIR=../docs/screenshots npx playwright t
 config/              reports.yaml (registry) · datasets.yaml · calendars/ · contracts/ · vocab/
                      reports/wasde/{mappings.yaml, focus.yaml, xml_layout/} · reports/export_sales/source.yaml
                      reports/oilseed_crush/source.yaml (verified table title, unit and row labels)
+                     reports/ethanol_grind/source.yaml (direct release.nass.usda.gov URL, two tables)
 src/usda_reports/
   core/              settings, logging, HTTP, manifest v2, calendars, contracts, vocab, registry
   reports/           ReportSpec base · wasde/ (sources, CSV + XML parsers, XML layout, silver)
                      export_sales/ (ESR API client, ingest, snapshot change-log parser)
                      oilseed_crush/ (ESMIS zip ingest, soybean-table parser, vintages)
+                     ethanol_grind/ (direct-download ingest, corn-consumed + co-products parser)
   nass_common/       ESMIS client (0-based paging, files[] URLs), zip fetch, NASS t/h/u/d CSV grammar
-  insights/          rules W1–W4, E1–E3, F1–F3 · gates · hero/card selection · typed insights.json schema
+  insights/          rules W1–W4, E1–E3, F1–F3, G1–G3, H1–H2 · gates · hero/card selection · typed insights.json schema
   bronze/            raw store + bronze-store delta shards
   silver/            report-agnostic driver + common envelope
   gold.py            runs dbt
   publish/           highlights, web JSON/Parquet, Excel, versioned catalogue, datapackage,
-                     catalog.json, Export Sales and crush page JSON, release/tag contract
+                     catalog.json, Export Sales/crush/Ethanol Grind page JSON, release/tag contract
   cli.py             `usda-reports` command
-dbt/                 staging/{wasde,export_sales,oilseed_crush} · marts/{core,wasde,export_sales,oilseed_crush,cross} ·
+dbt/                 staging/{wasde,export_sales,oilseed_crush,ethanol_grind} ·
+                     marts/{core,wasde,export_sales,oilseed_crush,ethanol_grind,cross} ·
                      seeds (dim_unit, dim_commodity, esr_corrections) · macros (assert_no_lookahead) · tests
 web/                 Next.js 16 static site (ECharts, hyparquet, SheetJS), EN + pt-BR, Playwright tests
-                     app/reports/{wasde,export-sales,oilseed-crush,crop-progress,grain-stocks} · app/commodities/[slug]
+                     app/reports/{wasde,export-sales,oilseed-crush,ethanol-grind,crop-progress,grain-stocks} · app/commodities/[slug]
 tests/               unit + integration (dbt + publish on real fixture data)
 data/manifest.json   audit trail of every ingested release (schema v2; data lives in releases)
 ```

@@ -24,6 +24,8 @@ SOURCE_DIRS: dict[str, tuple[str | None, str]] = {
     "fas_esr_api": ("export_sales", "json.gz"),
     # NASS release zips from ESMIS files[]: data/bronze/<report_id>/<release_key>.zip
     "esmis_zip": (None, "zip"),
+    # Ethanol Grind: no ESMIS identifier, fetched directly from release.nass.usda.gov.
+    "nass_direct_zip": (None, "zip"),
 }
 CSV_DIR = "usda_csv"
 XML_DIR = "esmis_xml"

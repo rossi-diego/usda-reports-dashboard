@@ -1,0 +1,96 @@
+# NASS Grain Crushings and Co-Products Production ("Ethanol Grind"): dry and wet mill corn
+# (and some sorghum, not modelled here) consumed for alcohol, plus the dry/wet mill co-products
+# produced. Same Current Agricultural Industrial Reports (CAIR) survey/schedule as Fats & Oils.
+#
+# Spike 2026-11-15: unlike Fats & Oils / Crop Progress / Grain Stocks / WASDE, this report has
+# no registered ESMIS "quick identifier" (findByIdentifier tried against every title-derived
+# guess -- GraiCrus, GrainCrush, CrusProd, cagc/CAGC, GrainCrushCoProd, Crushings, CoProd -- and
+# the literal title words; all return zero results, while the same lookup for "fatsoils"
+# correctly returns FatsOils case-insensitively, so this is a real absence, not a wrong guess).
+#
+# The report is instead fetched directly from NASS's own release server, which uses the same
+# predictable naming NASS uses for every CAIR report: https://release.nass.usda.gov/reports/
+# cagc<MM><YY>.zip (MM/YY = the *release* month, e.g. cagc1126.zip for the 2026-11-02 release),
+# plus matching .pdf/.txt. No key needed. Verified with curl back to cagc0316.zip (2016-03-01);
+# cagc0216.zip and earlier 404 (the server's own retention limit -- ESMIS's HTML release list
+# goes back to 2015-02, but that history is not fetchable this way). Release dates 2016-2026
+# spot-checked one-for-one against the ESMIS HTML release list
+# (https://esmis.nal.usda.gov/publication/grain-crushings-and-co-products-production): identical
+# to Fats & Oils' own calendar, including the 2025 shutdown recovery (Sep 2025 data skipped
+# straight to Nov 21 2025, then Dec 10 2025 next to it) -- see config/calendars/ethanol_grind.yaml.
+#
+# Each release zip holds cagc_all_tables.csv (Windows-1252) in the same NASS t/h/u/d/c grammar
+# as Fats & Oils / Crop Progress / Grain Stocks. Three tables are printed; table 2 (dry-mill
+# sorghum consumed, small and often withheld "(D)" or absent some months) is not modelled here.
+#
+#   Table 1 "Dry and Wet Mill, Corn Consumed - United States: <Month YYYY> with Comparisons"
+#     Header row: "Purpose", then one column per month (year-ago, previous month, current
+#     month). Unit row: "(1,000 bushels)" for every column.
+#   Table 3 "Dry and Wet Mill, Co-products and Products Produced - United States: <Month YYYY>
+#     with Comparisons"
+#     Header row: "Co-products and products", same three month columns. Unit row: "(tons)"
+#     (NASS short tons, 2,000 lb) for every column.
+#
+# Validation against the published text (cagc1126.txt, released 2026-11-02): "Total corn
+# consumed for alcohol and other uses was 485 million bushels... up 1% from September 2025"
+# = 3,110 + 438,423 + 7,907 + 35,399 thousand bushels = 484,839 (rounds to 485 million).
+base_url: "https://release.nass.usda.gov/reports/cagc{code}.zip"
+zip_member: "*_all_tables.csv"
+# First release this server still holds (its own retention limit, not ESMIS's).
+history_start: "2016-03-01"
+# How many newest releases a regular detect run re-fetches for changed bytes (new edition).
+recheck_last: 2
+# A release covers the month two months back (one to three months during shutdowns), same as
+# Fats & Oils.
+lag_months: {min: 1, max: 3}
+commodity_id: corn
+region_id: united_states
+tables:
+  corn_consumed:
+    number: "1"
+    title_prefix: "Dry and Wet Mill, Corn Consumed - United States"
+    header_first_cell: Purpose
+    unit_label: "(1,000 bushels)"
+    unit: k_bu
+    # Row label -> silver metric. "Dry mill" / "Wet mill" here are the fuel-alcohol split
+    # (printed with values); in table 3 the same words are bare section headers (known_rows).
+    metrics:
+      "Beverage alcohol": {metric: corn_beverage_alcohol_kbu}
+      "Fuel alcohol": {metric: corn_fuel_alcohol_kbu}
+      "Dry mill": {metric: corn_fuel_dry_mill_kbu}
+      "Wet mill": {metric: corn_fuel_wet_mill_kbu}
+      "Industrial alcohol": {metric: corn_industrial_alcohol_kbu}
+      "Total wet mill products other than fuel": {metric: corn_wet_mill_other_kbu}
+    # Section headers (no values) kept out of silver. A label in neither list fails the report.
+    known_rows:
+      - "Consumed for alcohol production"
+      - "Consumed for other purposes"
+  coproducts:
+    number: "3"
+    title_prefix: "Dry and Wet Mill, Co-products and Products Produced - United States"
+    header_first_cell: "Co-products and products"
+    unit_label: "(tons)"
+    unit: short_ton
+    metrics:
+      "Condensed distillers solubles (CDS - syrup)": {metric: cds_syrup_st}
+      "Corn oil (Corn Distillers Oil - CDO)": {metric: corn_oil_st}
+      "Distillers dried grains (DDG)": {metric: ddg_st}
+      "Distillers dried grains with solubles (DDGS)": {metric: ddgs_st}
+      "Distillers wet grains (DWG) 65% or more moisture": {metric: dwg_st}
+      "Modified distillers wet grains (DWG) 40% to 64% moisture": {metric: modified_dwg_st}
+      "Corn germ meal": {metric: corn_germ_meal_st}
+      "Corn gluten feed": {metric: corn_gluten_feed_st}
+      "Corn gluten meal": {metric: corn_gluten_meal_st}
+      "Wet corn gluten feed 40% to 60% moisture": {metric: wet_corn_gluten_feed_st}
+      "Carbon dioxide captured": {metric: co2_captured_st}
+    known_rows:
+      - "Dry mill"
+      - "Wet mill"
+      - "Dry and wet mill"
+      # Wet-mill corn oil, printed through ~2017 and dropped since (the dry-mill "Corn oil
+      # (Corn Distillers Oil - CDO)" row above is tracked and present throughout); not modelled
+      # as its own metric since it does not appear in every release.
+      - "Corn oil"
+# Typos in a published month header, corrected per release (checked by hand against the table
+# title and the neighbouring releases). Empty until one is found.
+header_fixes: {}

@@ -24,7 +24,7 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "USDA Reports Dashboard",
   description:
-    "Five USDA reports (WASDE, Export Sales, NASS crush, Crop Progress, Grain Stocks), harmonized point-in-time since 2010 and updated automatically on release day, in English and Portuguese.",
+    "Six USDA reports (WASDE, Export Sales, NASS crush, NASS Ethanol Grind, Crop Progress, Grain Stocks), harmonized point-in-time since 2010 and updated automatically on release day, in English and Portuguese.",
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };
@@ -52,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               rows={meta.history.rows}
               esrReleases={reports.export_sales?.releases ?? null}
               crushReleases={reports.oilseed_crush?.releases ?? null}
+              ethanolReleases={reports.ethanol_grind?.releases ?? null}
               cpReleases={reports.crop_progress?.releases ?? null}
               gsReleases={reports.grain_stocks?.releases ?? null}
             />

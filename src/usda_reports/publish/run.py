@@ -31,6 +31,7 @@ from usda_reports.publish.focus import Focus
 from usda_reports.publish.web_commodity import build_commodity_lenses
 from usda_reports.publish.web_crop_progress import build_crop_progress
 from usda_reports.publish.web_crush import build_crush
+from usda_reports.publish.web_ethanol_grind import build_ethanol_grind
 from usda_reports.publish.web_export_sales import build_export_sales
 from usda_reports.publish.web_grain_stocks import build_grain_stocks
 from usda_reports.publish.web_json import (
@@ -197,6 +198,8 @@ def publish_all(
         )
     if registry.reports["grain_stocks"].enabled:
         build_grain_stocks(con, web, nxt.get("grain_stocks"))
+    if registry.reports["ethanol_grind"].enabled:
+        build_ethanol_grind(con, web, nxt.get("ethanol_grind"))
 
     wasde_next = nxt.get(REPORT_ID)
     meta = build_meta(

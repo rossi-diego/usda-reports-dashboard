@@ -4,9 +4,9 @@ import type { Key } from "./i18n";
 // Crop Progress and Grain Stocks since cut C. Every report is live; a build without a report's
 // data shows that page's "not in this build yet" state, never invented numbers.
 export type ReportDef = {
-  id: "wasde" | "export_sales" | "crush" | "crop_progress" | "grain_stocks";
+  id: "wasde" | "export_sales" | "crush" | "ethanol_grind" | "crop_progress" | "grain_stocks";
   /** report_id in the published JSON (the crush page is report "oilseed_crush"). */
-  reportId: "wasde" | "export_sales" | "oilseed_crush" | "crop_progress" | "grain_stocks";
+  reportId: "wasde" | "export_sales" | "oilseed_crush" | "ethanol_grind" | "crop_progress" | "grain_stocks";
   name: Key;
   cadence: Key;
   cadenceDetail: Key;
@@ -40,6 +40,16 @@ export const REPORTS: ReportDef[] = [
     href: "/reports/oilseed-crush/",
   },
   {
+    id: "ethanol_grind",
+    reportId: "ethanol_grind",
+    name: "report.ethanol_grind",
+    cadence: "cadence.monthly",
+    cadenceDetail: "cadence.d.monthlyCrush",
+    color: "var(--r-ethanol)",
+    live: true,
+    href: "/reports/ethanol-grind/",
+  },
+  {
     id: "crop_progress",
     reportId: "crop_progress",
     name: "report.crop_progress",
@@ -66,6 +76,7 @@ export const REPORT_COLOR: Record<string, string> = {
   wasde: "var(--r-wasde)",
   export_sales: "var(--r-esr)",
   oilseed_crush: "var(--r-crush)",
+  ethanol_grind: "var(--r-ethanol)",
   crop_progress: "var(--r-progress)",
   grain_stocks: "var(--r-stocks)",
   cross: "var(--r-esr)",
@@ -76,6 +87,7 @@ export const REPORT_TILE: Record<string, string> = {
   wasde: "var(--tile-wasde)",
   export_sales: "var(--tile-esr)",
   oilseed_crush: "var(--tile-crush)",
+  ethanol_grind: "var(--tile-ethanol)",
   crop_progress: "var(--tile-progress)",
   grain_stocks: "var(--tile-stocks)",
   cross: "var(--tile-esr)",
@@ -86,6 +98,7 @@ export const REPORT_NAME: Record<string, Key> = {
   wasde: "report.wasde",
   export_sales: "report.export_sales",
   oilseed_crush: "report.crush",
+  ethanol_grind: "report.ethanol_grind",
   crop_progress: "report.crop_progress",
   grain_stocks: "report.grain_stocks",
 };
@@ -95,6 +108,7 @@ export const REPORT_HREF: Record<string, string> = {
   wasde: "/reports/wasde/",
   export_sales: "/reports/export-sales/",
   oilseed_crush: "/reports/oilseed-crush/",
+  ethanol_grind: "/reports/ethanol-grind/",
   crop_progress: "/reports/crop-progress/",
   grain_stocks: "/reports/grain-stocks/",
 };

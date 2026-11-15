@@ -231,7 +231,9 @@
             "condition_index",
             "stocks_vs_wasde",
             "implied_disappearance",
-            "on_farm_share"
+            "on_farm_share",
+            "grind_pace",
+            "required_monthly_grind"
           ],
           "title": "Kind",
           "type": "string"
@@ -295,7 +297,8 @@
               "grain_stocks_first_print",
               "imports_omitted_small_for_corn_soy",
               "nass_may_revise_production_same_day",
-              "nass_revises_previous_quarter"
+              "nass_revises_previous_quarter",
+              "ethanol_grind_history_from_2016"
             ],
             "type": "string"
           },

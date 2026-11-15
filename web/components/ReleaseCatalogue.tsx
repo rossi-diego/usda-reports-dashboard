@@ -17,6 +17,7 @@ const VINTAGE: Record<string, Key> = {
   wasde: "cat.vintage.wasde",
   export_sales: "cat.vintage.esr",
   oilseed_crush: "cat.vintage.crush",
+  ethanol_grind: "cat.vintage.ethanol_grind",
   crop_progress: "cat.vintage.cp",
   grain_stocks: "cat.vintage.gs",
 };
@@ -27,9 +28,11 @@ export const groupOf = (f: { report_id: string; dataset: string }) =>
     ? f.report_id
     : f.dataset === "crush_pace"
       ? "oilseed_crush"
-      : f.dataset.startsWith("stocks_")
-        ? "grain_stocks"
-        : "export_sales";
+      : f.dataset === "ethanol_pace"
+        ? "ethanol_grind"
+        : f.dataset.startsWith("stocks_")
+          ? "grain_stocks"
+          : "export_sales";
 
 /** Dataset name (Crop Progress "weekly" is not Export Sales "weekly"). */
 export const datasetKey = (f: { report_id: string; dataset: string }): Key =>
@@ -254,6 +257,7 @@ export default function ReleaseCatalogue({
                 {c.reports.includes("wasde") && <li>· {t("cat.wasdeIn")}</li>}
                 {c.reports.includes("export_sales") && <li>· {t("cat.esrIn")}</li>}
                 {c.reports.includes("oilseed_crush") && <li>· {t("cat.crushIn")}</li>}
+                {c.reports.includes("ethanol_grind") && <li>· {t("cat.ethanolGrindIn")}</li>}
                 {c.reports.includes("crop_progress") && <li>· {t("cat.cpIn")}</li>}
                 {c.reports.includes("grain_stocks") && <li>· {t("cat.gsIn")}</li>}
               </ul>

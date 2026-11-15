@@ -102,3 +102,24 @@ reports:
     history_start: "2010-06"
     release_key_format: date
     spec: usda_reports.reports.grain_stocks.spec:GrainStocksSpec
+
+  # NASS Grain Crushings and Co-Products Production ("Ethanol Grind"): corn (dry + wet mill)
+  # consumed for alcohol and the co-products produced (DDG, DDGS, corn oil, corn gluten feed...).
+  # No ESMIS quick identifier is registered for this report (checked and ruled out: see
+  # config/reports/ethanol_grind/source.yaml); fetched directly from release.nass.usda.gov
+  # instead, on the same schedule as Fats & Oils (first business day of the month, 15:00 ET,
+  # covering month - 2). History from 2016-03 only (release.nass.usda.gov's own retention).
+  ethanol_grind:
+    enabled: true
+    title: Grain Crushings and Co-Products Production (Ethanol Grind)
+    agency: USDA NASS
+    cadence: monthly
+    release_time_et: "15:00"
+    window_h: 6
+    grace_days: 45
+    key_env: null
+    licence: "US Government work, public domain; cite USDA NASS (Grain Crushings and Co-Products Production)"
+    min_rows: 51
+    history_start: "2016-03"
+    release_key_format: date
+    spec: usda_reports.reports.ethanol_grind.spec:EthanolGrindSpec

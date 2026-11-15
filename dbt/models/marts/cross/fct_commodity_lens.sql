@@ -69,6 +69,23 @@ crush_rows as (
     where m.value is not null
 ),
 
+ethanol as (
+    select * from {{ ref('fct_ethanol_pace') }}
+    qualify row_number() over (order by month desc) = 1
+),
+
+ethanol_rows as (
+    select 'corn', 'ethanol_grind', m.metric, m.value, m.unit_id,
+           cast(month as varchar), month, market_year, release_key, release_ts_utc,
+           cast(null as varchar)
+    from ethanol
+    cross join lateral (
+        values ('month_grind', month_grind_bu, 'bu'),
+               ('pct_of_usda_target', pct_of_target, 'share')
+    ) as m(metric, value, unit_id)
+    where m.value is not null
+),
+
 progress as (
     select * from {{ ref('fct_crop_progress_weekly') }}
     where kind = 'progress' and crop in ('corn', 'soybeans')
@@ -143,6 +160,7 @@ from (
     select * from wasde_rows
     union all select * from esr_rows
     union all select * from crush_rows
+    union all select * from ethanol_rows
     union all select * from progress_rows
     union all select * from cond_rows
     union all select * from stocks_rows

@@ -17,7 +17,7 @@ with us as (
     where period = 'annual'
       and reliability_stat is null
       and region_id = 'united_states'
-      and attribute_id in ('exports', 'production', 'ending_stocks', 'crush')
+      and attribute_id in ('exports', 'production', 'ending_stocks', 'crush', 'ethanol')
       and (
           (table_id = 'us_feed_grains_corn' and commodity_id = 'corn')
           or (table_id = 'us_soybeans_products'
@@ -53,6 +53,8 @@ select
     max(value) filter (where attribute_id = 'ending_stocks')             as ending_stocks_native,
     max(value * to_mt) filter (where attribute_id = 'ending_stocks')     as ending_stocks_mt,
     max(value) filter (where attribute_id = 'crush')                     as crush_native,
-    max(value * to_mt) filter (where attribute_id = 'crush')             as crush_mt
+    max(value * to_mt) filter (where attribute_id = 'crush')             as crush_mt,
+    max(value) filter (where attribute_id = 'ethanol')                   as ethanol_native,
+    max(value * to_mt) filter (where attribute_id = 'ethanol')           as ethanol_mt
 from conv
 group by commodity_id, market_year, my_start, wasde_release_key, wasde_release_ts_utc

@@ -1,0 +1,31 @@
+# Silver contract for NASS Grain Crushings and Co-Products Production ("Ethanol Grind"),
+# checked by usda_reports.core.contracts on every build and on every downloaded zip before it
+# reaches bronze. Silver keeps every printed value: one row per (release, data month, metric).
+report_id: ethanol_grind
+release_column: release_key
+release_label: Ethanol Grind releases
+key:
+  - release_key
+  - month
+  - metric
+not_null:
+  - release_key
+  - month
+  - market_year
+  - month_of_my
+  - metric
+  - unit_id
+  - column_role
+  - reported_month
+# 17 metrics (6 corn-consumed + 11 co-products) x 3 printed months.
+min_rows_per_release: 51
+# The newest month's corn-for-fuel-ethanol and the two headline co-products must be present.
+required_per_release:
+  label: current-month ethanol grind rows
+  filter: {column_role: current}
+  columns: [metric]
+  rows:
+    - [corn_fuel_alcohol_kbu]
+    - [ddg_st]
+    - [ddgs_st]
+envelope: true

@@ -50,6 +50,7 @@ export default function Sidebar({
   rows,
   esrReleases = null,
   crushReleases = null,
+  ethanolReleases = null,
   cpReleases = null,
   gsReleases = null,
 }: {
@@ -57,6 +58,7 @@ export default function Sidebar({
   rows: number;
   esrReleases?: number | null;
   crushReleases?: number | null;
+  ethanolReleases?: number | null;
   cpReleases?: number | null;
   gsReleases?: number | null;
 }) {
@@ -223,6 +225,7 @@ export default function Sidebar({
             [
               [esrReleases, "report.export_sales"],
               [crushReleases, "report.crush"],
+              [ethanolReleases, "report.ethanol_grind"],
               [cpReleases, "report.crop_progress"],
               [gsReleases, "report.grain_stocks"],
             ] as const

@@ -27,8 +27,8 @@ models:
         data_tests: [not_null]
 
   - name: int_wasde_asof
-    description: U.S. WASDE exports / production / ending stocks / crush per commodity × MY × WASDE vintage,
-      native and MT (dim_unit). Input of every point-in-time cross mart.
+    description: U.S. WASDE exports / production / ending stocks / crush / ethanol per commodity × MY ×
+      WASDE vintage, native and MT (dim_unit). Input of every point-in-time cross mart.
     config:
       contract:
         enforced: true
@@ -78,6 +78,12 @@ models:
     - name: crush_mt
       data_type: double
       description: U.S. soybean crush, metric tons.
+    - name: ethanol_native
+      data_type: double
+      description: U.S. corn used for ethanol & by-products, native WASDE unit (corn only).
+    - name: ethanol_mt
+      data_type: double
+      description: U.S. corn used for ethanol & by-products, metric tons.
   - name: dim_country
     description: Destination countries of FAS Export Sales.
     config:

@@ -11,6 +11,8 @@ import type {
   CrushIndex,
   EsrCommodity,
   EsrIndex,
+  EthanolGrindCommodity,
+  EthanolGrindIndex,
   GrainStocksCommodity,
   GrainStocksIndex,
   InsightsDoc,
@@ -77,6 +79,14 @@ export const getCrushIndex = () => readOptional<CrushIndex>("reports/oilseed_cru
 export function getCrush(): CrushCommodity | null {
   const f = getCrushIndex()?.commodities[0]?.file;
   return f ? readOptional<CrushCommodity>(f) : null;
+}
+
+export const getEthanolGrindIndex = () => readOptional<EthanolGrindIndex>("reports/ethanol_grind/index.json");
+
+/** The corn Ethanol Grind page payload (null for a build without Ethanol Grind data). */
+export function getEthanolGrind(): EthanolGrindCommodity | null {
+  const f = getEthanolGrindIndex()?.commodities[0]?.file;
+  return f ? readOptional<EthanolGrindCommodity>(f) : null;
 }
 
 // ---------------------------------------------------------------------- cut C

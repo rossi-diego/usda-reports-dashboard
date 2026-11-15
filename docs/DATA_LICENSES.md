@@ -15,6 +15,7 @@ Works of the U.S. federal government are not subject to copyright in the United 
 | Fats & Oils: Oilseed Crushings, Production, Consumption and Stocks | USDA NASS | ESMIS `findByIdentifier/FatsOils` → release zip from `files[]` → `cafo_all_tables.csv` | none | USDA NASS, *Fats and Oils: Oilseed Crushings, Production, Consumption and Stocks* |
 | Crop Progress | USDA NASS | ESMIS `findByIdentifier/CropProg` → release zip from `files[]` → `prog_all_tables.csv` | none | USDA NASS, *Crop Progress* |
 | Grain Stocks | USDA NASS | ESMIS `findByIdentifier/GraiStoc` → release zip from `files[]` → `grst_all_tables.csv` (table 1) | none | USDA NASS, *Grain Stocks* |
+| Grain Crushings and Co-Products Production (Ethanol Grind) | USDA NASS | `release.nass.usda.gov/reports/cagc<MM><YY>.zip` (direct, no ESMIS identifier) → `cagc_all_tables.csv` (tables 1 and 3) | none | USDA NASS, *Grain Crushings and Co-Products Production* |
 
 Notes on the NASS files (spike of 2026-11-09):
 
@@ -27,6 +28,14 @@ Notes on the NASS files (spike of 2026-11-09):
   rows only.
 * GraiStoc: 221 releases back to 1973-10-24, zips on 105 of them from 2001-06-29, the
   `grst_all_tables.csv` layout from **2010-06-30**, where the history used here starts.
+* Grain Crushings and Co-Products Production has no registered ESMIS quick identifier (checked
+  2026-11-15: every title-derived guess against `findByIdentifier` returns zero results, while
+  the same lookup for `fatsoils` correctly finds FatsOils case-insensitively, so this is a real
+  absence). Fetched instead from NASS's own release server using its predictable naming
+  (`cagc<MM><YY>.zip`, MM/YY = the release month); that server's own retention starts at
+  **2016-03-01** (`cagc0316.zip`; `cagc0216.zip` and earlier 404), even though ESMIS's own HTML
+  release list for this report goes back to 2015-02. Release dates spot-checked one-for-one
+  against that ESMIS HTML list and found identical to Fats & Oils' own calendar.
 * No NASS API key is used. The NASS Quick Stats API (which would reach further back) is a v2
   item; if it is ever used, the README and the site footer must carry NASS's required notice
   ("This product uses the NASS API but is not endorsed or certified by NASS").

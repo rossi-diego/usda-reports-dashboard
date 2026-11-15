@@ -39,6 +39,8 @@ InsightKind = Literal[
     "stocks_vs_wasde",  # G1
     "implied_disappearance",  # G2
     "on_farm_share",  # G3
+    "grind_pace",  # H1
+    "required_monthly_grind",  # H2
 ]
 SuppressedReason = Literal[
     "n_below_min",  # comparison sample smaller than gates.min_n
@@ -71,6 +73,7 @@ Caveat = Literal[
     "imports_omitted_small_for_corn_soy",  # G2: imports left out of the identity
     "nass_may_revise_production_same_day",  # G2: WASDE production as of the release is used
     "nass_revises_previous_quarter",  # each Grain Stocks release revises earlier dates
+    "ethanol_grind_history_from_2016",  # Ethanol Grind history starts with the 2016-03-01 file
 ]
 
 

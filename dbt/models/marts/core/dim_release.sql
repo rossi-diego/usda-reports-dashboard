@@ -73,6 +73,23 @@ with releases as (
         count(*)                  as n_rows
     from {{ ref('stg_grain_stocks') }}
     group by report_id, release_key
+
+    union all
+
+    -- NASS Grain Crushings and Co-Products Production ("Ethanol Grind"): one release per
+    -- calendar date (as published; no ESMIS identifier -- fetched directly, see
+    -- config/reports/ethanol_grind/source.yaml).
+    select
+        report_id,
+        release_key,
+        min(release_ts_utc)       as release_ts_utc,
+        max(edition)              as edition,
+        min(source)               as source,
+        any_value(bronze_sha256)  as bronze_sha256,
+        min(vintage_quality)      as vintage_quality,
+        count(*)                  as n_rows
+    from {{ ref('stg_ethanol_grind') }}
+    group by report_id, release_key
 )
 
 select
