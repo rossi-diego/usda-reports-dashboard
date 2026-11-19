@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-11-16T21:58:21+00:00",
-  "data_release_tag": "weekly-2026-11-16",
+  "updated_at": "2026-11-19T20:29:13+00:00",
+  "data_release_tag": "weekly-2026-11-19",
   "reports": {
     "crop_progress": {
       "latest_release_key": "2026-11-16",
@@ -7582,12 +7582,13 @@
       }
     },
     "export_sales": {
-      "latest_release_key": "2026-11-13",
+      "latest_release_key": "2026-11-19",
       "latest_number": null,
-      "total_rows": 1408728,
+      "total_rows": 1410044,
       "shards_written": [
         "bronze__export_sales__base.tar.gz",
-        "bronze__export_sales__2026-11.tar.gz"
+        "bronze__export_sales__2026-11.tar.gz",
+        "bronze__export_sales__2026-11.2.tar.gz"
       ],
       "releases": {
         "2026-11-05": {
@@ -7615,6 +7616,19 @@
           "fetched_at": "2026-11-13T19:33:00+00:00",
           "status": "ok",
           "shard": "bronze__export_sales__2026-11.tar.gz"
+        },
+        "2026-11-19": {
+          "source": "fas_esr_api",
+          "file": "export_sales/2026-11-19.json.gz",
+          "url": "https://api.fas.usda.gov",
+          "sha256": "22af05f7d09084ff516ffe3a3f37f196de24fac256c265282a0317238f02b6f0",
+          "bytes": 103366,
+          "release_date": "2026-11-19",
+          "release_ts_utc": "2026-11-19T13:30:00+00:00",
+          "edition": 1,
+          "fetched_at": "2026-11-19T20:27:53+00:00",
+          "status": "ok",
+          "shard": "bronze__export_sales__2026-11.2.tar.gz"
         }
       }
     },
